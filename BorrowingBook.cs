@@ -34,8 +34,15 @@ namespace cSharp_LibrarySystemEF
                         ReturnBookById(_context);
                         break;
                     case "3":
+                        GetPatronBorrowingHistory(_context);
+                        break;
+                    case "4":
+                        BorrowingHistory(_context);
+                        break;
+                    case "5":
                         homePage.mainMenu(_context);
                         break;
+
                     default:
                         Console.WriteLine("Invalid choice. Press any key to continue.");
                         Console.ReadKey();
@@ -117,7 +124,39 @@ namespace cSharp_LibrarySystemEF
 
             _context.SaveChanges();
         }
-        //public void 
+        public void GetPatronBorrowingHistory(LibraryDbContext _context)
+        {
+            Console.WriteLine("Enter patron ID: ");
+            int patronID = int.Parse(Console.ReadLine());
+            var patron = _context.Patron.Include(p => p.BorrowingTransactions)
+                .FirstOrDefault(p => p.PatronId == patronID);
+
+            if (patron == null)
+            {
+                Console.WriteLine("Patron not found.");
+            }
+
+            var borrowingHistory = patron.BorrowingTransactions.OrderByDescending(bt => bt.BorrowDate).ToList();
+
+            foreach (var transaction in borrowingHistory)
+            {
+                Console.WriteLine($"Borrowing Transaction ID: {transaction.BorrowingTransactionId}\nBook ID: {transaction.BookId}\nBook Title: {transaction.Book.Title}\nBorrow Date: {transaction.BorrowDate}\nReturn Date: {transaction.ReturnDate}\n____________________");
+            }
+            Console.WriteLine("Invalid choice. Press any key to continue.");
+            Console.ReadKey();
+            return;
+        }
+        public void BorrowingHistory(LibraryDbContext _context)
+        {
+            var transaction = _context.BorrowingTransaction.Include(p => p.Patron).Include(b => b.Book);
+            foreach (var tran in transaction)
+            {
+                Console.WriteLine($"Borrowing Transaction ID: {tran.BorrowingTransactionId}\nPatron Name: {tran.Patron.Name}\nPatron Phone Number: {tran.Patron.PhoneNum}\nBook ID: {tran.BookId}\nBook Title: {tran.Book.Title}\nBorrow Date: {tran.BorrowDate}\nReturn Date: {tran.ReturnDate}\n____________________");
+            }
+            Console.WriteLine("Invalid choice. Press any key to continue.");
+            Console.ReadKey();
+            return;
+        }
 
     }
 }
