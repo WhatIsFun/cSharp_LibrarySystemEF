@@ -127,33 +127,51 @@ namespace cSharp_LibrarySystemEF
         public void GetPatronBorrowingHistory(LibraryDbContext _context)
         {
             Console.WriteLine("Enter patron ID: ");
-            int patronID = int.Parse(Console.ReadLine());
+            int patronID;
+            if (!int.TryParse(Console.ReadLine(), out patronID))
+            {
+                Console.WriteLine("Invalid patron ID.");
+                return;
+            }
             var patron = _context.Patron.Include(p => p.BorrowingTransactions)
-                .FirstOrDefault(p => p.PatronId == patronID);
-
+                            .FirstOrDefault(p => p.PatronId == patronID);
             if (patron == null)
             {
-                Console.WriteLine("Patron not found.");
+                Console.WriteLine("No history found for this Patron");
             }
 
             var borrowingHistory = patron.BorrowingTransactions.OrderByDescending(bt => bt.BorrowDate).ToList();
-
-            foreach (var transaction in borrowingHistory)
+            if (borrowingHistory.Count == 0)
             {
-                Console.WriteLine($"Borrowing Transaction ID: {transaction.BorrowingTransactionId}\nBook ID: {transaction.BookId}\nBook Title: {transaction.Book.Title}\nBorrow Date: {transaction.BorrowDate}\nReturn Date: {transaction.ReturnDate}\n____________________");
+                Console.WriteLine("No borrowing history found for this patron.");
             }
-            Console.WriteLine("Invalid choice. Press any key to continue.");
+            else
+            {
+                foreach (var transaction in borrowingHistory)
+                {
+                    Console.WriteLine($"Borrowing Transaction ID: {transaction.BorrowingTransactionId}\nPatron ID:{transaction.Patron.PatronId}\nPatron Name: {transaction.Patron.Name}\nPatron Phone Number: {transaction.Patron.PhoneNum}\nBook ID: {transaction.BookId}\nBook Title: {transaction.Book.Title}\nBorrow Date: {transaction.BorrowDate}\nReturn Date: {transaction.ReturnDate}\n____________________");
+                }
+            }
+            
+            Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
             return;
         }
         public void BorrowingHistory(LibraryDbContext _context)
         {
             var transaction = _context.BorrowingTransaction.Include(p => p.Patron).Include(b => b.Book);
-            foreach (var tran in transaction)
+            if (transaction == null)
             {
-                Console.WriteLine($"Borrowing Transaction ID: {tran.BorrowingTransactionId}\nPatron Name: {tran.Patron.Name}\nPatron Phone Number: {tran.Patron.PhoneNum}\nBook ID: {tran.BookId}\nBook Title: {tran.Book.Title}\nBorrow Date: {tran.BorrowDate}\nReturn Date: {tran.ReturnDate}\n____________________");
+                Console.WriteLine("No transaction found");
             }
-            Console.WriteLine("Invalid choice. Press any key to continue.");
+            else
+            {
+                foreach (var tran in transaction)
+                {
+                    Console.WriteLine($"Borrowing Transaction ID: {tran.BorrowingTransactionId}\nPatron ID:{tran.Patron.PatronId}\nPatron Name: {tran.Patron.Name}\nPatron Phone Number: {tran.Patron.PhoneNum}\nBook ID: {tran.BookId}\nBook Title: {tran.Book.Title}\nBorrow Date: {tran.BorrowDate}\nReturn Date: {tran.ReturnDate}\n____________________");
+                }
+            }
+            Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
             return;
         }

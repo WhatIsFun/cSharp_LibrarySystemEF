@@ -90,6 +90,7 @@ namespace cSharp_LibrarySystemEF
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
+            Console.Clear();
         }
 
         private void SearchPatrons(LibraryDbContext _context)

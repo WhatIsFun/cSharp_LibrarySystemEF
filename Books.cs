@@ -46,6 +46,7 @@ namespace cSharp_LibrarySystemEF
                         DeleteBook(_context);
                         break;
                     case "6":
+                        Console.Clear();
                         homePage.mainMenu(_context);
                         break;
                     default:
@@ -95,12 +96,14 @@ namespace cSharp_LibrarySystemEF
 
             foreach (var book in books)
             {
-                Console.WriteLine($"ID: {book.BookId}, Title: {book.Title}, Author: {book.Author}, " +
-                                  $"Publication Year: {book.PublicationYear}, Available: {book.IsAvailable}");
+                Console.WriteLine($"ID: {book.BookId}\nTitle: {book.Title}\nAuthor: {book.Author}\n" +
+                                  $"Publication Year: {book.PublicationYear}\nAvailable: {book.IsAvailable}\n________________");
             }
 
             Console.WriteLine("Press any key to continue.");
             Console.ReadKey();
+            Console.Clear();
+
         }
 
         private void SearchBooks(LibraryDbContext _context)
